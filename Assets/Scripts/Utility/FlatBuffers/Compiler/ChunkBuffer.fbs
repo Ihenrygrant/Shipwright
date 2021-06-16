@@ -1,0 +1,19 @@
+namespace ChunkFlatBufferStructures;
+
+table ChunkBlockInfo{
+	BlockTypes:byte;	
+	BlockHealth:byte;		
+	BitPack_Status3_Orientations5:byte;
+}
+
+table ChunkInfoBuffer{
+	chunkIndex:[ushort];
+	Blocks:[ChunkBlockInfo];
+}
+
+table ChunkBuffer{
+	chunks:[ChunkInfoBuffer];
+}
+
+root_type ChunkBuffer;
+//file_identifier "WHAT";
