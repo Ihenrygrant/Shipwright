@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class CategoryUIController : MonoBehaviour {
@@ -63,7 +61,6 @@ public class CategoryUIController : MonoBehaviour {
             {
                 currentSelected++;
             }
-
 
             transform.parent.SendMessage("setUIState", currentSelected);
         }

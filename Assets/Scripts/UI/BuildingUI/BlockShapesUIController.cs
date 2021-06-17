@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class BlockShapesUIController : MonoBehaviour {
     HorizontalLayoutGroup HLG;
     int currentSelected = 0;
     int maxColumns = 0;
-
 
     void Start()
     {
@@ -32,9 +29,6 @@ public class BlockShapesUIController : MonoBehaviour {
             {
                 currentSelected--;
             }
-
-
-
         }
         else if (selection == BuildingUIInterface.cursorDirection.right)
         {
