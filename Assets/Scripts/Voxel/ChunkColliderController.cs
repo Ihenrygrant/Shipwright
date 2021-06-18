@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ChunkColliderController : MonoBehaviour {
 
-    Chunk chunk;
+    ChunkGameObject chunk;
 
     List<Collider> colliderTargets = new List<Collider>();
 
@@ -21,7 +21,7 @@ public class ChunkColliderController : MonoBehaviour {
             m_collider.enabled = false;
         }
 
-        chunk = GetComponent<Chunk>();
+        chunk = GetComponent<ChunkGameObject>();
 	}
 	
 	// Update is called once per frame
@@ -79,7 +79,7 @@ public class ChunkColliderController : MonoBehaviour {
             return;
         }
 
-        if (chunk.chunkInfo.blockData[x, y, z].Status == (byte)BlockStatus.Occupied_Block || chunk.chunkInfo.blockData[x, y, z].Status == (byte)BlockStatus.Occupied_DestroyedBlock)
+        if (chunk.chunkInfo.blocks[x, y, z].Status == (byte)BlockStatus.Occupied_Block || chunk.chunkInfo.blocks[x, y, z].Status == (byte)BlockStatus.Occupied_DestroyedBlock)
         {
             playerColliders[index].enabled = true;
             playerColliders[index].center = new Vector3(x, y, z);

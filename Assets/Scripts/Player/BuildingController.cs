@@ -16,7 +16,7 @@ public class BuildingController : MonoBehaviour
     private GameObject PlayerObject;
 
     private Vector3 rotationOffset = new Vector3(0, 0, 0);
-    private Chunk chunkSelection;
+    private ChunkGameObject chunkSelection;
 
     void Awake()
     {
@@ -44,7 +44,7 @@ public class BuildingController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            chunkSelection = hit.collider.transform.GetComponent<Chunk>();
+            chunkSelection = hit.collider.transform.GetComponent<ChunkGameObject>();
             Vector3 positionSelection = getBlockIndex(hit);
 
             MeshCollider meshCollider = hit.collider as MeshCollider;
@@ -69,46 +69,46 @@ public class BuildingController : MonoBehaviour
             //min
             if ((int)positionSelection.x == 0 && hit.normal.x == -1)
             {
-                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.chunkIndex.Clone();
+                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.index.Clone();
                 newChunkSelection[0] = (ushort)(newChunkSelection[0] - 1);
-                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<Chunk>();
+                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<ChunkGameObject>();
                 positionSelection.x = ChunkSettings.xSize;
             }
             else if ((int)positionSelection.y == 0 && hit.normal.y == -1)
             {
-                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.chunkIndex.Clone();
+                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.index.Clone();
                 newChunkSelection[1] = (ushort)(newChunkSelection[1] - 1);
-                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<Chunk>();
+                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<ChunkGameObject>();
                 positionSelection.y = ChunkSettings.ySize;
             }
             else if ((int)positionSelection.z == 0 && hit.normal.z == -1)
             {
-                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.chunkIndex.Clone();
+                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.index.Clone();
                 newChunkSelection[2] = (ushort)(newChunkSelection[2] - 1);
-                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<Chunk>();
+                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<ChunkGameObject>();
                 positionSelection.z = ChunkSettings.zSize;
             }
 
             //max
             if ((int)positionSelection.x >= ChunkSettings.xSize - 1 && hit.normal.x == 1)
             {
-                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.chunkIndex.Clone();
+                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.index.Clone();
                 newChunkSelection[0] = (ushort)(newChunkSelection[0] + 1);
-                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<Chunk>();
+                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<ChunkGameObject>();
                 positionSelection.x = -1.0f;
             }
             else if ((int)positionSelection.y >= ChunkSettings.ySize - 1 && hit.normal.y == 1)
             {
-                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.chunkIndex.Clone();
+                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.index.Clone();
                 newChunkSelection[1] = (ushort)(newChunkSelection[1] + 1);
-                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<Chunk>();
+                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<ChunkGameObject>();
                 positionSelection.y = -1.0f;
             }
             else if ((int)positionSelection.z >= ChunkSettings.zSize - 1 && hit.normal.z == 1)
             {
-                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.chunkIndex.Clone();
+                ushort[] newChunkSelection = (ushort[])chunkSelection.chunkInfo.index.Clone();
                 newChunkSelection[2] = (ushort)(newChunkSelection[2] + 1);
-                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<Chunk>();
+                chunkSelection = transform.parent.GetComponent<ShipChunkHandler>().chunks[newChunkSelection[0], newChunkSelection[1], newChunkSelection[2]].GetComponent<ChunkGameObject>();
                 positionSelection.z = -1.0f;
             }
 
@@ -129,7 +129,7 @@ public class BuildingController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            chunkSelection = hit.collider.transform.GetComponent<Chunk>();
+            chunkSelection = hit.collider.transform.GetComponent<ChunkGameObject>();
             Vector3 positionSelection = getBlockIndex(hit);
 
 
@@ -177,7 +177,7 @@ public class BuildingController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            chunkSelection = hit.collider.transform.GetComponent<Chunk>();
+            chunkSelection = hit.collider.transform.GetComponent<ChunkGameObject>();
 
             MeshCollider meshCollider = hit.collider as MeshCollider;
             if (meshCollider == null || meshCollider.sharedMesh == null)

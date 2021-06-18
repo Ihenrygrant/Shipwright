@@ -9,7 +9,7 @@ using UnityEngine;
 public class ShipChunkHandler : MonoBehaviour {
 
     //Threads
-    public List<Chunk> JobQueue = new List<Chunk>();
+    public List<ChunkGameObject> JobQueue = new List<ChunkGameObject>();
     public ChunkMeshGeneratorThread ChunkMeshGeneratorThreads;
     int runningThreads = 0;
     int maximumThreads = 1;
@@ -95,13 +95,13 @@ public class ShipChunkHandler : MonoBehaviour {
         index[1] = y;
         index[2] = z;
 
-        newChunk.GetComponent<Chunk>().SetChunkData(index, newChunk.transform.position + new Vector3(x * 16, y * 16, z * 16), this);
+        newChunk.GetComponent<ChunkGameObject>().SetChunkData(index, newChunk.transform.position + new Vector3(x * 16, y * 16, z * 16), this);
 
         chunks[x, y, z] = newChunk;
         yield return null;
     }
 
-    public void NotifyChunkUpdate(Chunk chunk, uint priority)
+    public void NotifyChunkUpdate(ChunkGameObject chunk, uint priority)
     {
         //Debug.Log(chunk.chunkInfo.chunkIndex[0] + "  " + chunk.chunkInfo.chunkIndex[1] + "  " + chunk.chunkInfo.chunkIndex[2]);
         switch (priority)
@@ -161,7 +161,7 @@ public class ShipChunkHandler : MonoBehaviour {
                 for (int z = 0; z < zShipSize; z++)
                 {
                     Debug.Log(chunks[x, y, z]);
-                    chunkInfos.Add(chunks[x, y, z].GetComponent<Chunk>().chunkInfo);
+                    chunkInfos.Add(chunks[x, y, z].GetComponent<ChunkGameObject>().chunkInfo);
                 }
             }
         }
@@ -222,8 +222,8 @@ public class ShipChunkHandler : MonoBehaviour {
             chunks[x, y, z] = gameObject;
             gameObject.transform.SetParent(ChunkEmpty.transform);
 
-            Chunk chunk  = gameObject.GetComponent<Chunk>();
-            chunk.SetChunkData(UnpackedchunkInfos[i].chunkIndex, chunk.transform.position + new Vector3(x * ChunkSettings.xSize, y * ChunkSettings.ySize, z * ChunkSettings.zSize), this);
+            ChunkGameObject chunk  = gameObject.GetComponent<ChunkGameObject>();
+            chunk.SetChunkData(UnpackedchunkInfos[i].index, chunk.transform.position + new Vector3(x * ChunkSettings.xSize, y * ChunkSettings.ySize, z * ChunkSettings.zSize), this);
             chunk.FillBlocks(UnpackedchunkInfos[i]);
 
         }
@@ -260,7 +260,7 @@ public class ShipChunkHandler : MonoBehaviour {
                     index[1] = y;
                     index[2] = z;
 
-                    Chunk chunkRef = newChunk.GetComponent<Chunk>();
+                    ChunkGameObject chunkRef = newChunk.GetComponent<ChunkGameObject>();
                     chunkRef.SetChunkData(index, newChunk.transform.position + new Vector3(x * ChunkSettings.xSize, y * ChunkSettings.ySize, z * ChunkSettings.zSize), this);
                     chunks[x, y, z] = newChunk;
                     newChunk.transform.SetParent(ChunkEmpty.transform);
@@ -302,7 +302,7 @@ public class ShipChunkHandler : MonoBehaviour {
                     index[1] = y;
                     index[2] = z;
 
-                    Chunk chunkRef = newChunk.GetComponent<Chunk>();
+                    ChunkGameObject chunkRef = newChunk.GetComponent<ChunkGameObject>();
                     chunkRef.SetChunkData(index, newChunk.transform.position + new Vector3(x * ChunkSettings.xSize, y * ChunkSettings.ySize, z * ChunkSettings.zSize), this);
                     chunks[x, y, z] = newChunk;
                     newChunk.transform.SetParent(ChunkEmpty.transform);
@@ -353,9 +353,9 @@ public class ShipChunkHandler : MonoBehaviour {
     bool _threadRunning;
     public Thread _thread;
 
-    Chunk loadedChunk;
+    ChunkGameObject loadedChunk;
 
-    public void Init(Chunk UpdatedChunk)
+    public void Init(ChunkGameObject UpdatedChunk)
     {
         // Begin our heavy work on a new thread.
         //_thread = new Thread(ThreadedWork);
@@ -363,7 +363,7 @@ public class ShipChunkHandler : MonoBehaviour {
     }
 
 
-    private Block CheckBlock(Chunk updatedChunk, int x, int y, int z)
+    private Block CheckBlock(ChunkGameObject updatedChunk, int x, int y, int z)
     {
         if (x < 0 || y < 0 || z < 0 ||
             x >= ChunkSettings.xSize || y >= ChunkSettings.ySize || z >= ChunkSettings.zSize)

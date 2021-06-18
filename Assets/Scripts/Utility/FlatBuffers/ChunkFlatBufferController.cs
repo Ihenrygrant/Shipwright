@@ -88,13 +88,13 @@ public class ChunkFlatBufferController
         {
             Offset<ChunkBlockInfo>[] offset_ChunkBlocks = new Offset<ChunkBlockInfo>[count_ChunkBlocks];
 
-            for (int i_blocks = 0; i_blocks < chunks[i_chunks].blockData.Length; i_blocks++)
+            for (int i_blocks = 0; i_blocks < chunks[i_chunks].blocks.Length; i_blocks++)
             {
                 int z = i_blocks % ChunkSettings.zSize;
                 int y = (i_blocks / ChunkSettings.zSize) % ChunkSettings.ySize;
                 int x = i_blocks / (ChunkSettings.ySize * ChunkSettings.zSize);
 
-                BlockData blockData = chunks[i_chunks].blockData[z, y, x];
+                Block blockData = chunks[i_chunks].blocks[z, y, x];
                 var bitPack = (blockData.Status << 5) | blockData.Orientation;
 
                 var offset_block = ChunkBlockInfo.CreateChunkBlockInfo(fbb, (sbyte)blockData.Type, (sbyte)blockData.Health, (sbyte)bitPack);
@@ -110,7 +110,7 @@ public class ChunkFlatBufferController
         Offset<ChunkInfoBuffer>[] offset_ChunkInfoBuffers = new Offset<ChunkInfoBuffer>[chunks.Count];
         for (int i_chunks = 0; i_chunks < chunks.Count; i_chunks++)
         {
-            VectorOffset chunkIndexOffset = ChunkInfoBuffer.CreateChunkIndexVector(fbb, chunks[i_chunks].chunkIndex);
+            VectorOffset chunkIndexOffset = ChunkInfoBuffer.CreateChunkIndexVector(fbb, chunks[i_chunks].index);
             offset_ChunkInfoBuffers[i_chunks] = ChunkInfoBuffer.CreateChunkInfoBuffer(fbb, chunkIndexOffset, offset_ChunkBlocksCollection[i_chunks]);
         }
         #endregion
@@ -138,12 +138,12 @@ public class ChunkFlatBufferController
             ChunkInfoBuffer? chunkInfo = data.Chunks(i);
 
             ChunkData unpackedInfo = new ChunkData();
-            unpackedInfo.chunkIndex = new ushort[3];
-            unpackedInfo.blockData = new BlockData[ChunkSettings.xSize, ChunkSettings.ySize, ChunkSettings.zSize];
+            unpackedInfo.index = new ushort[3];
+            unpackedInfo.blocks = new Block[ChunkSettings.xSize, ChunkSettings.ySize, ChunkSettings.zSize];
 
-            unpackedInfo.chunkIndex[0] = chunkInfo.Value.ChunkIndex(0);
-            unpackedInfo.chunkIndex[1] = chunkInfo.Value.ChunkIndex(1);
-            unpackedInfo.chunkIndex[2] = chunkInfo.Value.ChunkIndex(2);
+            unpackedInfo.index[0] = chunkInfo.Value.ChunkIndex(0);
+            unpackedInfo.index[1] = chunkInfo.Value.ChunkIndex(1);
+            unpackedInfo.index[2] = chunkInfo.Value.ChunkIndex(2);
 
             // Debug.Log(unpackedInfo.chunkIndex[0] + "  " + unpackedInfo.chunkIndex[1] + "  " + unpackedInfo.chunkIndex[2]);
 
@@ -153,8 +153,8 @@ public class ChunkFlatBufferController
                 {
                     for (int x = 0; x < ChunkSettings.xSize; x++)
                     {
-                        unpackedInfo.blockData[x, y, z] = new BlockData();
-                        var blockData = unpackedInfo.blockData[x, y, z];
+                        unpackedInfo.blocks[x, y, z] = new Block();
+                        var blockData = unpackedInfo.blocks[x, y, z];
                         var index = (z * ChunkSettings.xSize * ChunkSettings.ySize) + (y * ChunkSettings.xSize) + x;
 
                         blockData.Type = (byte)chunkInfo.Value.Blocks(index).Value.BlockTypes;

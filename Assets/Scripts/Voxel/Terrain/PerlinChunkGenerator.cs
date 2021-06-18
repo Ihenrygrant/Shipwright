@@ -5,7 +5,7 @@ public class PerlinChunkGenerator : MonoBehaviour
 
     public int seed;
 
-    private Chunk chunk;
+    private ChunkGameObject chunk;
 
     void Start()
     {
@@ -13,7 +13,7 @@ public class PerlinChunkGenerator : MonoBehaviour
         //Generate(chunk, seed);
     }
 
-    private void Generate(Chunk chunk, int seed)
+    private void Generate(ChunkGameObject chunk, int seed)
     {
         Random.InitState(seed);
         byte[,,] blocks = new byte[ChunkSettings.xSize, ChunkSettings.ySize, ChunkSettings.zSize];

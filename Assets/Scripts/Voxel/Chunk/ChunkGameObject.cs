@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 
-public class Chunk : MonoBehaviour
+public class ChunkGameObject : MonoBehaviour
 {
     public ChunkData chunkInfo;
     public ShipChunkHandler ship;
@@ -9,40 +8,31 @@ public class Chunk : MonoBehaviour
     public MeshFilter filter;
     public MeshData meshData;
 
-    private UnityEvent onBlockUpdate;
     public bool MeshUpdate = false;
 
-
-    private bool willSerialize = true;
-
-    public Chunk(ushort[] index, Vector3 location, ShipChunkHandler ship)
+    public ChunkGameObject(ushort[] index, Vector3 location, ShipChunkHandler ship)
     {
         chunkInfo = new ChunkData();
-        chunkInfo.chunkIndex = new ushort[3];
-        chunkInfo.blockData = new BlockData[ChunkSettings.xSize, ChunkSettings.ySize, ChunkSettings.zSize];
+        chunkInfo.index = new ushort[3];
+        chunkInfo.blocks = new Block[ChunkSettings.xSize, ChunkSettings.ySize, ChunkSettings.zSize];
 
-        chunkInfo.chunkIndex = index;
+        chunkInfo.index = index;
         transform.position = location;
         this.ship = ship;
     }
 
     private void Awake()
     {
-
         if (filter == null)
         {
             filter = GetComponent<MeshFilter>();
         }
-
-        //onBlockUpdate.AddListener(() => BuildChunk(this));
     }
 
     void Start()
     {
         //demoChunkInit();
     }
-
-
 
     private void Update()
     {
@@ -98,12 +88,12 @@ public class Chunk : MonoBehaviour
     public void SetChunkData(ushort[] index, Vector3 location, ShipChunkHandler ship)
     {
         chunkInfo = new ChunkData();
-        chunkInfo.chunkIndex = new ushort[3];
-        chunkInfo.blockData = new BlockData[ChunkSettings.xSize, ChunkSettings.ySize, ChunkSettings.zSize];
+        chunkInfo.index = new ushort[3];
+        chunkInfo.blocks = new Block[ChunkSettings.xSize, ChunkSettings.ySize, ChunkSettings.zSize];
 
-        chunkInfo.chunkIndex[0] = index[0];
-        chunkInfo.chunkIndex[1] = index[1];
-        chunkInfo.chunkIndex[2] = index[2];
+        chunkInfo.index[0] = index[0];
+        chunkInfo.index[1] = index[1];
+        chunkInfo.index[2] = index[2];
 
         transform.position = location;
         this.ship = ship;
@@ -120,12 +110,12 @@ public class Chunk : MonoBehaviour
             {
                 for (var x = 0; x < ChunkSettings.zSize; ++x)
                 {
-                    chunkInfo.blockData[x, y, z] = new BlockData();
+                    chunkInfo.blocks[x, y, z] = new Block();
 
-                    chunkInfo.blockData[x, y, z].Type = (byte)UnityEngine.Random.Range(0, 22);
-                    chunkInfo.blockData[x, y, z].Health = (byte)UnityEngine.Random.Range(0, 255);
-                    chunkInfo.blockData[x, y, z].Orientation = (byte)UnityEngine.Random.Range(0, 23);
-                    chunkInfo.blockData[x, y, z].Status = (byte)BlockStatus.Occupied_Block;
+                    chunkInfo.blocks[x, y, z].Type = (byte)UnityEngine.Random.Range(0, 22);
+                    chunkInfo.blocks[x, y, z].Health = (byte)UnityEngine.Random.Range(0, 255);
+                    chunkInfo.blocks[x, y, z].Orientation = (byte)UnityEngine.Random.Range(0, 23);
+                    chunkInfo.blocks[x, y, z].Status = (byte)BlockStatus.Occupied_Block;
                 }
             }
         }
@@ -141,12 +131,12 @@ public class Chunk : MonoBehaviour
             {
                 for (var x = 0; x < ChunkSettings.zSize; ++x)
                 {
-                    chunkInfo.blockData[x, y, z] = new BlockData();
+                    chunkInfo.blocks[x, y, z] = new Block();
 
-                    chunkInfo.blockData[x, y, z].Type = 16;
-                    chunkInfo.blockData[x, y, z].Health = (byte)UnityEngine.Random.Range(0, 255);
-                    chunkInfo.blockData[x, y, z].Orientation = 0;
-                    chunkInfo.blockData[x, y, z].Status = (byte)BlockStatus.Occupied_Block;
+                    chunkInfo.blocks[x, y, z].Type = 16;
+                    chunkInfo.blocks[x, y, z].Health = (byte)UnityEngine.Random.Range(0, 255);
+                    chunkInfo.blocks[x, y, z].Orientation = 0;
+                    chunkInfo.blocks[x, y, z].Status = (byte)BlockStatus.Occupied_Block;
                 }
             }
         }
@@ -161,33 +151,33 @@ public class Chunk : MonoBehaviour
             {
                 for (var x = 0; x < ChunkSettings.zSize; ++x)
                 {
-                    chunkInfo.blockData[x, y, z] = new BlockData();
+                    chunkInfo.blocks[x, y, z] = new Block();
 
-                    chunkInfo.blockData[x, y, z].Type = 0;
-                    chunkInfo.blockData[x, y, z].Health = (byte)UnityEngine.Random.Range(0, 255);
-                    chunkInfo.blockData[x, y, z].Orientation = 0;
-                    chunkInfo.blockData[x, y, z].Status = (byte)BlockStatus.Empty;
+                    chunkInfo.blocks[x, y, z].Type = 0;
+                    chunkInfo.blocks[x, y, z].Health = (byte)UnityEngine.Random.Range(0, 255);
+                    chunkInfo.blocks[x, y, z].Orientation = 0;
+                    chunkInfo.blocks[x, y, z].Status = (byte)BlockStatus.Empty;
                 }
             }
         }
         BuildChunk(this);
     }
 
-    public void BuildChunk(Chunk updatedChunk)
+    public void BuildChunk(ChunkGameObject updatedChunk)
     {
         if (ship == null) return;
         ship.NotifyChunkUpdate(updatedChunk, 10);
     }
 
-    public void BuildChunk(Chunk updatedChunk, uint priority)
+    public void BuildChunk(ChunkGameObject updatedChunk, uint priority)
     {
         ship.NotifyChunkUpdate(updatedChunk, priority);
     }
 
     internal void SetBlock(int x, int y, int z, byte blockType, BlockStatus status)
     {
-        chunkInfo.blockData[x, y, z].Type = blockType;
-        chunkInfo.blockData[x, y, z].Status = (byte)status;
+        chunkInfo.blocks[x, y, z].Type = blockType;
+        chunkInfo.blocks[x, y, z].Status = (byte)status;
 
         BuildChunk(this, 0);
         //onBlockUpdate.Invoke();
@@ -217,12 +207,12 @@ public class Chunk : MonoBehaviour
             {
                 for (var x = 0; x < ChunkSettings.zSize; ++x)
                 {
-                    chunkInfo.blockData[x, y, z] = new BlockData();
+                    chunkInfo.blocks[x, y, z] = new Block();
 
-                    chunkInfo.blockData[x, y, z].Type = chunkData.blockData[x, y, z].Type;
-                    chunkInfo.blockData[x, y, z].Health = chunkData.blockData[x, y, z].Health;
-                    chunkInfo.blockData[x, y, z].Orientation = chunkData.blockData[x, y, z].Orientation;
-                    chunkInfo.blockData[x, y, z].Status = chunkData.blockData[x, y, z].Status;
+                    chunkInfo.blocks[x, y, z].Type = chunkData.blocks[x, y, z].Type;
+                    chunkInfo.blocks[x, y, z].Health = chunkData.blocks[x, y, z].Health;
+                    chunkInfo.blocks[x, y, z].Orientation = chunkData.blocks[x, y, z].Orientation;
+                    chunkInfo.blocks[x, y, z].Status = chunkData.blocks[x, y, z].Status;
                 }
             }
         }
@@ -233,7 +223,7 @@ public class Chunk : MonoBehaviour
 
     internal BlockStatus GetBlockStatus(int x, int y, int z)
     {
-        return (BlockStatus)chunkInfo.blockData[x, y, z].Status;
+        return (BlockStatus)chunkInfo.blocks[x, y, z].Status;
     }
 
 

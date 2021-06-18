@@ -1,5 +1,3 @@
-﻿using System;
-
 /*
  * chunkBlockStatus
  * 0 - Empty Space
@@ -16,21 +14,7 @@ public enum BlockStatus
     Occupied_Object
 }
 
-public static class ChunkSettings
-{
-    public static ushort xSize = 16;
-    public static ushort ySize = 16;
-    public static ushort zSize = 16;
-}
-
-[Serializable]
-public class ChunkData
-{
-    public ushort[] chunkIndex;
-    public BlockData[,,] blockData;
-}
-
-public class BlockData
+public class Block
 {
     public byte Type;
     public byte Health;

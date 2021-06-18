@@ -2,49 +2,6 @@
 using System.Threading;
 using UnityEngine;
 
-public enum BlockDirections
-{
-    //X axis orientations
-    x1,
-    x2,
-    x3,
-    x4,
-    xn1,
-    xn2,
-    xn3,
-    xn4,
-
-    //y axis orientations
-    y1,
-    y2,
-    y3,
-    y4,
-    yn1,
-    yn2,
-    yn3,
-    yn4,
-
-    //z axis orientations
-    z1,//default orientation
-    z2,
-    z3,
-    z4,
-    zn1,
-    zn2,
-    zn3,
-    zn4,
-}
-
-public enum CardinalDirection
-{
-    West,
-    East,
-    Up,
-    Down,
-    North,
-    South
-}
-
 public class ChunkMeshGeneratorThread
 {
 
@@ -56,16 +13,16 @@ public class ChunkMeshGeneratorThread
     public Thread _thread;
     ShipChunkHandler handler;
 
-    List<Chunk> chunkJobs;
+    List<ChunkGameObject> chunkJobs;
 
     public void Init(ShipChunkHandler handler)
     {
-        chunkJobs = new List<Chunk>();
+        chunkJobs = new List<ChunkGameObject>();
         _thread = new Thread(ThreadedWork);
         this.handler = handler;
     }
 
-    public void SetData(Chunk chunkUpdate)
+    public void SetData(ChunkGameObject chunkUpdate)
     {
         chunkJobs.Add(chunkUpdate);
     }
@@ -112,7 +69,7 @@ public class ChunkMeshGeneratorThread
     }
 
 
-    private MeshData GenerateMesh(Chunk updatedChunk)
+    private MeshData GenerateMesh(ChunkGameObject updatedChunk)
     {
         MeshData mesh = new MeshData();
 
@@ -155,7 +112,7 @@ public class ChunkMeshGeneratorThread
                             }
                         }
 
-                        GenerateMeshForAdjacentBlocks(block, updatedChunk.chunkInfo.blockData[x, y, z].Type, updatedChunk.chunkInfo.blockData[x, y, z].Orientation, adjacentBlocks, generatedColors, generatedTriangles, generatedVertices, generatedNormals, generatedUV);
+                        GenerateMeshForAdjacentBlocks(block, updatedChunk.chunkInfo.blocks[x, y, z].Type, updatedChunk.chunkInfo.blocks[x, y, z].Orientation, adjacentBlocks, generatedColors, generatedTriangles, generatedVertices, generatedNormals, generatedUV);
                     }
 
 
@@ -232,7 +189,7 @@ public class ChunkMeshGeneratorThread
 
                 var normal = (adjPosition - currentPosition).normalized;
 
-                GetVerticeOrientation((BlockDirections)blockOrientation, ConvertNormalToDirection(normal), generatedVertices, quadPosition, u, v);
+                GetVerticeOrientation((Orentations)blockOrientation, ConvertNormalToDirection(normal), generatedVertices, quadPosition, u, v);
 
                 generatedNormals.Add(normal);
                 generatedNormals.Add(normal);
@@ -243,7 +200,7 @@ public class ChunkMeshGeneratorThread
                 int RowOffset = blockType / 16;
 
                 Vector2[] vector2s = new Vector2[4];
-                vector2s = TextureMapController.GetBlockUV(blockType, (BlockDirections)blockOrientation, ConvertNormalToDirection(normal), vector2s);
+                vector2s = TextureMapController.GetBlockUV(blockType, (Orentations)blockOrientation, ConvertNormalToDirection(normal), vector2s);
 
                 generatedUV.Add(vector2s[0]);
                 generatedUV.Add(vector2s[1]);
@@ -293,42 +250,42 @@ public class ChunkMeshGeneratorThread
         generatedVertices.Add(quadPosition - u + v);
     }
 
-    private void GetVerticeOrientation(BlockDirections direction, CardinalDirection side, List<Vector3> generatedVertices, Vector3 quadPosition, Vector3 u, Vector3 v)
+    private void GetVerticeOrientation(Orentations direction, CardinalDirection side, List<Vector3> generatedVertices, Vector3 quadPosition, Vector3 u, Vector3 v)
     {
 
         if (side == CardinalDirection.West)
         {
             switch (direction)
             {
-                case BlockDirections.x1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.x2:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x4:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.x2:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x4:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.xn1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.y1:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y2:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y3:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y4:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y1:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y2:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y3:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y4:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.yn1: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn2: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn3: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn4: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn1: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn2: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn3: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn4: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.z1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z4: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z4: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn2: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn2: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
                 default:break;
             }
@@ -338,35 +295,35 @@ public class ChunkMeshGeneratorThread
         {
             switch (direction)
             {
-                case BlockDirections.x1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x2:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x4:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x2:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x4:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.xn1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.y1:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y2:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y3:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y4:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y1:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y2:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y3:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y4:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.yn1: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn2: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn3: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn4: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn1: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn2: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn3: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn4: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.z1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z4: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z4: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn2: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn2: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
                 default:break;
             }
@@ -376,35 +333,35 @@ public class ChunkMeshGeneratorThread
         {
             switch (direction)
             {
-                case BlockDirections.x1:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x2: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x3:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x4:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x1:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x2: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x3:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x4:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.xn1:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn2:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn3:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn4:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn1:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn2:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn3:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn4:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.y1:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y3:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y1:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y3:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.yn1: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn1: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.z1: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z1: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
                 default:break;
             }
@@ -414,35 +371,35 @@ public class ChunkMeshGeneratorThread
         {
             switch (direction)
             {
-                case BlockDirections.x1:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x2: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x3:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x4:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x1:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x2: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x3:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x4:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.xn1:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn2:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn3:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn4:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn1:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn2:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn3:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn4:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.y1:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y3:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y1:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y3:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.yn1: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn1: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.z1: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z1: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
                 default:break;
             }
@@ -452,35 +409,35 @@ public class ChunkMeshGeneratorThread
         {
             switch (direction)
             {
-                case BlockDirections.x1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x4:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x4:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.xn1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn2:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn2:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.y1:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y1:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.yn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.z1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
                 default:break;
             }
@@ -490,35 +447,35 @@ public class ChunkMeshGeneratorThread
         {
             switch (direction)
             {
-                case BlockDirections.x1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.x4:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.x4:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.xn1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn2:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.xn4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn1:AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn2:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.xn4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.y1:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
-                case BlockDirections.y4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y1:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y2:AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y3:AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v);break;
+                case Orentations.y4:AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v);break;
 
-                case BlockDirections.yn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.yn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn3: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.yn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.z1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.z4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.z4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
-                case BlockDirections.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
-                case BlockDirections.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn1: AddVertices_UpwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn2: AddVertices_LeftwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn3: AddVertices_DownwardFacing(generatedVertices, quadPosition, u, v); break;
+                case Orentations.zn4: AddVertices_RightwardFacing(generatedVertices, quadPosition, u, v); break;
 
                 default:break;
             }
@@ -567,7 +524,7 @@ public class ChunkMeshGeneratorThread
         return CardinalDirection.Up;
     }
 
-    private Block CheckBlock(Chunk updatedChunk, int x, int y, int z)
+    private Block CheckBlock(ChunkGameObject updatedChunk, int x, int y, int z)
     {
         if (x < 0 || y < 0 || z < 0 ||
             x >= ChunkSettings.xSize || y >= ChunkSettings.ySize || z >= ChunkSettings.zSize)
